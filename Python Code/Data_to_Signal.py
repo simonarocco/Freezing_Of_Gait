@@ -2,6 +2,7 @@ import pandas as pd
 from enum import Enum
 import numpy as np
 
+#enum class for accelerations
 class Acceleration(Enum):
     X = "X Acceleration"
     Y = "Y Acceleration"
@@ -26,4 +27,5 @@ def smooth_signal(signal, window_size):
 
 def data_to_signal(file_path, accel_type):
     signal = get_signal(file_path, accel_type)
-    return smooth_signal(signal, 3)
+    return smooth_signal(signal, 6)
+

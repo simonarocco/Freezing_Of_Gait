@@ -11,11 +11,11 @@ def plot_signal(signal_data, accel_type):
 signal = data_to_signal("simona_walking1.csv", Acceleration.Y)
 plot_signal(signal, Acceleration.Y)
 
-signal = data_to_signal("simona_walking2.csv", Acceleration.Y)
+signal = data_to_signal("simona_shuffling2.csv", Acceleration.Y)
 plot_signal(signal, Acceleration.Y)
 
-signal = data_to_signal("simona_walking3.csv", Acceleration.Y)
+signal = data_to_signal("simona_shuffling3.csv", Acceleration.Y)
 plot_signal(signal, Acceleration.Y)
 
-signal = data_to_signal("simona_walking4.csv", Acceleration.Y)
+signal = data_to_signal("simona_shuffling4.csv", Acceleration.Y)
 plot_signal(signal, Acceleration.Y)
