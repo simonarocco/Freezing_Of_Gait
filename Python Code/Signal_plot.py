@@ -1,21 +1,21 @@
 import matplotlib.pyplot as plt
 from Data_to_Signal import *
+from Peak_Tracker import *
 
-def plot_signal(signal_data, accel_type):
+def create_min_scatter_plot(signal):
+    tracker = PeakTracker(3, 4, -20000)
+    for i in range(len(signal)):
+        tracker.add_sample(signal[i])
+    smoothed_signal = tracker.smoothed_signal
+    min_valley_indices = tracker.tot_valley_times
+    min_valley_amplitudes = tracker.tot_valley_amplitudes
+    return smoothed_signal, min_valley_indices, min_valley_amplitudes
+
+def plot_signal(signal_data, accel_type, scatter_x = None, scatter_y = None):
     plt.xlabel("Time")
     plt.ylabel("Acceleration")
     plt.title(accel_type)
     plt.plot(signal_data, 'm')
+    if (scatter_x and scatter_y) is not None:
+        plt.scatter(scatter_x, scatter_y)
     plt.show()
-
-signal = data_to_signal("simona_walking1.csv", Acceleration.Y)
-plot_signal(signal, Acceleration.Y)
-
-signal = data_to_signal("simona_shuffling2.csv", Acceleration.Y)
-plot_signal(signal, Acceleration.Y)
-
-signal = data_to_signal("simona_shuffling3.csv", Acceleration.Y)
-plot_signal(signal, Acceleration.Y)
-
-signal = data_to_signal("simona_shuffling4.csv", Acceleration.Y)
-plot_signal(signal, Acceleration.Y)

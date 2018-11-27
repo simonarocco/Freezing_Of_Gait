@@ -7,13 +7,15 @@ def get_peaks(accel_signal):
         if i != (len(accel_signal) - 1):
             prev_slope = current_slope
             current_slope = accel_signal[i+1] - accel_signal[i]
-            if (current_slope > 0 and prev_slope < 0) or (current_slope < 0 and prev_slope > 0) or (current_slope == 0):
+            if (current_slope > 0 and prev_slope < 0) or (current_slope == 0):
                 peak_index_val = []
                 peak_index_val.append(i)
                 peak_index_val.append(accel_signal[i])
                 peaks.append(peak_index_val)
     return peaks
 
+# will likely only use min peaks
+"""
 def get_max_peaks(signal):
     peaks = get_peaks(signal)
     max_peaks = []
@@ -26,6 +28,7 @@ def get_max_peaks(signal):
     if not max_peaks:
         return 0
     else: return max_peaks
+"""
 
 def get_min_peaks(signal):
     peaks = get_peaks(signal)
@@ -40,8 +43,4 @@ def get_min_peaks(signal):
         return 0
     else: return min_peaks
 
-signal = data_to_signal("simona_walking1.csv", Acceleration.Y)
 
-get_max_peaks(signal)
-
-get_min_peaks(signal)
