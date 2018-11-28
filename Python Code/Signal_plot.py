@@ -1,9 +1,8 @@
 import matplotlib.pyplot as plt
-from Data_to_Signal import *
-from Peak_Tracker import *
+from Scripts_For_Project.Peak_Tracker import *
 
 def create_min_scatter_plot(signal):
-    tracker = PeakTracker(3, 4, -20000)
+    tracker = PeakTracker(3, 6, -20000)
     for i in range(len(signal)):
         tracker.add_sample(signal[i])
     smoothed_signal = tracker.smoothed_signal
