@@ -1,6 +1,6 @@
-from Data_to_Signal import *
 from Calibration import *
 import statistics
+from Data_to_Signal import *
 
 def test_signal(signal, min_range, peak_diff_range):
     i = 0
@@ -51,6 +51,6 @@ calibrated_signal = calibrate(signal_to_calibrate)
 min_range = calibrated_signal[0]
 abs_peak_diff_range = calibrated_signal[1]
 
-signal_to_test = data_to_signal("simona_walking1.csv", Acceleration.X)
+signal_to_test = data_to_signal_real_time(Acceleration.X)
 
 test_signal(signal_to_test, min_range, abs_peak_diff_range)
