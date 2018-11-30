@@ -38,8 +38,10 @@ def test_signal(signal, min_range, peak_diff_range):
         if shuffle_mins_count >= 4 and shuffle_abs_peak_diffs_count >= 4:
             if statistics.mean(shuffle_abs_peak_diffs[-3:]) < 300:
                 print("STOP DETECTED")
+                return j
             else:
                 print("SHUFFLE DETECTED")
+                return j
             break
         if k > len(signal):
             break
@@ -51,6 +53,11 @@ calibrated_signal = calibrate(signal_to_calibrate)
 min_range = calibrated_signal[0]
 abs_peak_diff_range = calibrated_signal[1]
 
-signal_to_test = data_to_signal_real_time(Acceleration.X)
+signal_to_test = data_to_signal("simona_walking2.csv", Acceleration.X)
+test_signal(signal_to_test, min_range, abs_peak_diff_range)
 
+signal_to_test = data_to_signal("simona_shuffling1.csv", Acceleration.X)
+test_signal(signal_to_test, min_range, abs_peak_diff_range)
+
+signal_to_test = data_to_signal("simona-stop.csv", Acceleration.X)
 test_signal(signal_to_test, min_range, abs_peak_diff_range)

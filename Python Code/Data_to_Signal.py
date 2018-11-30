@@ -1,8 +1,6 @@
 import pandas as pd
 from enum import Enum
 import numpy as np
-import serial
-from Serial_Monitor_Reading import process_string
 
 # enum class for accelerations
 class Acceleration(Enum):

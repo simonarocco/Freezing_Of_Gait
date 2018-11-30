@@ -1,6 +1,6 @@
 import serial
 import csv
-import matplotlib as plt
+import matplotlib
 
 def name_file():
     print("Enter file name: ")
@@ -33,8 +33,6 @@ while count <= 1000:
 print(len(acz))
 print(len(acx))
 print(len(acy))
-
-
 
 with open(name_file(), 'w') as csvfile:
     filewriter = csv.writer(csvfile)
