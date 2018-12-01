@@ -3,11 +3,11 @@
 #define M_PI 3.14159265358979323846
 int mpu = 0x68; // I2C address of the MPU-6050
 int led = 13;
-float AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
+float AcX, AcY, AcZ;
 float sampleArrayAcx[80]; //sample array holding 80 Acx 
 int count = 0; //use to fill up sample array 
-float minimumRange[] = {21498.266666666666, 28498.266666666666}; //holds lower and upper bound of minimum range
-double absPeakDiffRange[] = {-32684.8, -27684.8};
+float minimumRange[2]; // = {21498.266666666666, 28498.266666666666}; //holds lower and upper bound of minimum range
+double absPeakDiffRange[2];// = {-32684.8, -27684.8};
 float shuffleMinArray[600];
 float shufflePeakArray[600];
 int indexShuffle = 0;
@@ -42,7 +42,7 @@ void loop() {
   float minimum = 0.0;
   float maximum = -40000.0;
   float absPeakDiff = 0.0;
-  while(j<=k){
+  while(j<k){
       if(sampleArrayAcx[j]<minimum) minimum = sampleArrayAcx[j];
       if(sampleArrayAcx[j]>maximum) maximum = sampleArrayAcx[j];
       absPeakDiff = maximum - minimum;
@@ -56,11 +56,11 @@ void loop() {
        shuffleMinArray[indexShuffle] = 0;
        shuffleMinCount = 0;
        }
-  if(absPeakDiff<absPeakDiffRange[0] || absPeakDiff>absPeakDiffRange[1]){
+  if(absPeakDiff<absPeakDiffRange[0] || absPeakDiff>absPeakDiffRange[1]){ //shuffle detected
       shufflePeakArray[indexShuffle]=absPeakDiff;
       shufflePeakCount ++;
       }
-  else if(absPeakDiff>absPeakDiffRange[0] && absPeakDiff<absPeakDiffRange[1]){
+  else if(absPeakDiff>absPeakDiffRange[0] && absPeakDiff<absPeakDiffRange[1]){ //no shuffle detected
       shufflePeakArray[indexShuffle] = 0;
       shufflePeakCount = 0;
       }
@@ -77,8 +77,6 @@ void loop() {
      
    if(indexShuffle>=600) indexShuffle = 0;
    else indexShuffle++;
-   
-  
 }
 
 float mean(float signalArray[]){
@@ -117,7 +115,7 @@ float mean(float signalArray[]){
     float minimumC = 0.0;
     float maximumC = -30000.0;
     while(i<10){
-      for(int a =0; i<80; i++){
+      for(int a =0; a<80; a++){
         createSampleLength80();
         callAcx[a][i] = sampleArrayAcx[a];
         }
