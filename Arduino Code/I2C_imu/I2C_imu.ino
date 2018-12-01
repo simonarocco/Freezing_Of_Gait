@@ -141,7 +141,18 @@ float mean(float signalArray[]){
      absPeakDiffRange[0] = meanFull(peakDiff) - 5000;
      absPeakDiffRange[1] = meanFull(peakDiff) + 2000;
       
-     
+     Serial.print("Minimum Range lower bound");
+     Serial.println(minimumRange[0]);
+     Serial.print("Minimum range upper bound");
+     Serial.println(minimumRange[1]);
+     Serial.print("Maximum Range lower bound");
+     Serial.println(maximumRange[0]);
+     Serial.print("Maximum range upper bound");
+     Serial.println(maximumRange[1]);
+     Serial.print("Peak Diff Range lower bound");
+     Serial.println(absPeakDiffRange[0]);
+     Serial.print("Peaks diff range upper bound");
+     Serial.println(absPeakDiffRange[1]);
     }
 
  float meanFull(float arrays[10]){
