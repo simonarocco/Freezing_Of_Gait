@@ -34,7 +34,7 @@ void loop() {
     callibrate();
     callibrated = false;
     }
-  createSampleLength80(sampleArrayAcx);
+  createSampleLength80();
   //counter for min and maxes
   int i =0;
   int j = 0;
@@ -86,7 +86,7 @@ float mean(float signalArray[]){
   return mean;
   }
 
- void createSampleLength80(float sample[80]){
+ float createSampleLength80(){
     int i = 0;
     while(i<80){
       Wire.beginTransmission(mpu);
@@ -101,15 +101,14 @@ float mean(float signalArray[]){
       Serial.println(AcY);
       Serial.print("Acc z: ");
       AcZ = Wire.read()<<8|Wire.read();
-      sample[i] = AcX;
+      sampleArrayAcx[i] = AcX;
       delay(10);
       i++;
      }
   }
 
-  void callibrate(){
+ void callibrate(){
     float callAcx[80][10];
-    float sample80[80];
     int i = 0;
     int j = 0;
     int k = 80;
@@ -119,8 +118,8 @@ float mean(float signalArray[]){
     float maximumC = -30000.0;
     while(i<10){
       for(int a =0; i<80; i++){
-        createSampleLength80(sample80);
-        callAcx[a][i] = sample80[a];
+        createSampleLength80();
+        callAcx[a][i] = sampleArrayAcx[a];
         }
       while(j<k){
         if(callAcx[j][i] < minimumC) minimumC = callAcx[j][i];
