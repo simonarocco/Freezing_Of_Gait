@@ -5,9 +5,9 @@ int mpu = 0x68; // I2C address of the MPU-6050
 int led = 13;
 float AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
 float sampleArrayAcx[80]; //sample array holding 80 Acx 
-count = 0; //use to fill up sample array 
+int count = 0; //use to fill up sample array 
 float minimumRange[] = {21498.266666666666, 28498.266666666666}; //holds lower and upper bound of minimum range
-float absPeakDiffRange[] = {-32684.8, -27684.8};
+double absPeakDiffRange[] = {-32684.8, -27684.8};
 float shuffleMinArray[600];
 float shufflePeakArray[600];
 int indexShuffle = 0;
@@ -40,7 +40,7 @@ void loop() {
     AcZ = Wire.read()<<8|Wire.read();
     Serial.println(AcZ);
     delay(10);
-    sampleArratAcx[count] = Acx;
+    sampleArrayAcx[count] = AcX;
     count++;
   }
   //counter for min and maxes
@@ -68,16 +68,29 @@ void loop() {
       shufflePeakArray[indexShuffle]=absPeakDiff;
       shufflePeakCount ++;
       }
-   else if(absPeakDiff>absPeakDiff[0] && absPeakDiff<absPeakDiff[1]){
+  else if(absPeakDiff>absPeakDiffRange[0] && absPeakDiff<absPeakDiffRange[1]){
       shufflePeakArray[indexShuffle] = 0;
       shufflePeakCount = 0;
       }
    if(shuffleMinCount>=4 && shufflePeakCount >=4){
-    if 
+    if (mean(sampleArrayAcx)<300){
+      Serial.println("STOP DETECTED");
       }
+     else{
+      Serial.println("SHUFFLE DETECTED");
+      }
+      shuffleMinCount = 0;
+      shufflePeakCount = 0;
+      }
+     
    if(indexShuffle>=600) indexShuffle = 0;
    else indexShuffle++;
    
   
 }
+
+float mean(float signalArray[]){
+  float mean = (sampleArrayAcx[79]+sampleArrayAcx[78]+sampleArrayAcx[77])/3.0;
+  return mean;
+  }
 
