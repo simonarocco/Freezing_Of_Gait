@@ -3,63 +3,89 @@
 int mpu = 0x68; // I2C address of the MPU-6050
 int led = 13;
 float AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
-float sampleArrayAcx[80]; //sample array holding 80 Acx 
-int count = 0; //use to fill up sample array 
-float minimumRange[] = {21498.266666666666, 28498.266666666666}; //holds lower and upper bound of minimum range
-float absPeakDiffRange[] = {-32684.8, -27684.8};
+float minimumRange[] = {-34768, -32000}; //holds lower and upper bound of minimum range
+float absPeakDiffRange[] = {30000, 32500};
 float shuffleMinArray[100];
 float shufflePeakArray[100];
 int indexShuffle = 0;
 int shuffleMinCount = 0;
 int shufflePeakCount = 0;
+float smoothedSignal[80];
+float minimum = 0;
+float maximum = -30000;
+int pinLED = 10;
 
 void setup() {
+
   Wire.begin();
   Wire.beginTransmission(mpu);
   Wire.write(0x6B); // PWR_MGMT_1 register
   Wire.write(0);
   Wire.endTransmission(true);
   Serial.begin(115200);
-  pinMode(led, OUTPUT);
+  pinMode(pinLED, OUTPUT);
+
 }
 
 void loop() {
-  
-  while(count<80){
+  int count = 0;
+  int countSS = 0;
+  float sum = 0;
+  float meanSS = 0;
+  while(count<480){
     Wire.beginTransmission(mpu);
     Wire.write(0x3B);
     Wire.endTransmission(false);
     Wire.requestFrom(mpu, 14, true);
-    Serial.print("Acc x: ");
+    //Serial.print("Acc x: ");
     AcX = Wire.read()<<8|Wire.read();
-    Serial.println(AcX);
-    Serial.print("Acc y: ");
+    //Serial.println(AcX);
+    //Serial.print("Acc y: ");
     AcY = Wire.read()<<8|Wire.read();
-    Serial.println(AcY);
-    Serial.print("Acc z: ");
+    //Serial.println(AcY);
+    //Serial.print("Acc z: ");
     AcZ = Wire.read()<<8|Wire.read();
-    Serial.println(AcZ);
-    delay(10);
-    sampleArrayAcx[count] = AcX;
+    //Serial.println(AcZ);
+    //delay(10);
+
+    sum+= AcX;
+    countSS++;
     count++;
+    if(countSS == 6) {
+      meanSS = sum/6;
+      smoothedSignal[((count)/6)-1] = meanSS;
+      countSS = 0;
+      sum = 0;
+    }
   }
+  
+ 
   //counter for min and maxes
-  int i =0;
   int j = 0;
-  int k = 80;
-  float minimum = 0.0;
-  float maximum = -40000.0;
-  float absPeakDiff = 0.0;
-  while(j<=k){
-      if(sampleArrayAcx[j]<minimum) minimum = sampleArrayAcx[j];
-      if(sampleArrayAcx[j]>maximum) maximum = sampleArrayAcx[j];
-      absPeakDiff = maximum - minimum;
-      j++;
-      }
-  if(minimum>minimumRange[1]){ //shuffle detected
-      shuffleMinArray[indexShuffle] = minimum;
-      shuffleMinCount ++;
-      }
+  minimum = 0;
+  maximum = -30000;
+  float absPeakDiff = 0;
+  while(j<80){
+    if(smoothedSignal[j]<minimum) {
+      minimum = smoothedSignal[j];
+    }
+    if(smoothedSignal[j]>maximum) {
+      maximum = smoothedSignal[j];
+    }
+    j++;
+  }
+  absPeakDiff = maximum - minimum;
+  Serial.print("Minimum: ");
+  Serial.println(minimum);
+  Serial.print("Maximum");
+  Serial.println(maximum);
+  Serial.print("Peak diff: ");
+  Serial.println(absPeakDiff);
+  
+if(minimum>minimumRange[1] || minimum<minimumRange[0]){ //shuffle detected
+  shuffleMinArray[indexShuffle] = minimum;
+  shuffleMinCount ++;
+  }
   else if (minimum>minimumRange[0] && minimum<minimumRange[1]){ //no shuffle detected
        shuffleMinArray[indexShuffle] = 0;
        shuffleMinCount = 0;
@@ -72,21 +98,41 @@ void loop() {
       shufflePeakArray[indexShuffle] = 0;
       shufflePeakCount = 0;
       }
-   if(shuffleMinCount>=4 && shufflePeakCount >=4){
-    if (mean(sampleArrayAcx)<300){
+    Serial.print("Shuffle Minimums: ");
+    Serial.println(shuffleMinCount);
+    Serial.print("Shuffle Peak Diff: ");
+    Serial.println(shufflePeakCount);
+   if(shuffleMinCount>=2 && shufflePeakCount >=3){
+    Serial.print("peak diff avg: ");
+    Serial.println(mean(shufflePeakArray, indexShuffle));
+    if (mean(shufflePeakArray, indexShuffle)<4000){
       Serial.println("STOP DETECTED");
+      digitalWrite(pinLED, HIGH);
+      delay(1000);
     }
     else{
       Serial.println("SHUFFLE DETECTED");
+      digitalWrite(pinLED, HIGH);
+      delay(1000);
+      
     }
     shuffleMinCount = 0;
     shufflePeakCount = 0;
    }
    if(indexShuffle>=100) indexShuffle = 0;
    else indexShuffle++;
+   
 }
 
-float mean(float signalArray[]){
-  float mean = (sampleArrayAcx[79]+sampleArrayAcx[78]+sampleArrayAcx[77])/3.0;
-  return mean;
+float mean(float signalArray[], int index){
+  return (signalArray[index]+signalArray[index-1])/2.0;
+}
+
+float meanFull(float arrays[]){
+  int sum = 0;
+  int mean = 0;
+  for(int i = 0; i < sizeof(arrays); i++){
+    sum += arrays[i];
+  }
+  return mean = sum/sizeof(arrays); 
 }
